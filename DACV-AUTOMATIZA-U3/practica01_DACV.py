@@ -3,20 +3,32 @@ import json
 
 def GetAllProducts():
     url = 'https://fakestoreapi.com/products'
-    Respuesta = requests.get(url).json()
-    print("Listado de productos")
-    print('-------------------------')
-    print(json.dumps(Respuesta, indent=4, ensure_ascii=False))
-
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        Respuesta = response.json()
+        print("Listado de productos")
+        print('-------------------------')
+        print(json.dumps(Respuesta, indent=4, ensure_ascii=False))
+    except requests.exceptions.RequestException as e:
+        print("Error al obtener la lista de productos:", e)
+        if response is not None:
+            print("Respuesta del servidor:", response.text)
 
 def GetProduct():
     id_product = input('ID del producto: \n')
-    url='https://fakestoreapi.com/products/' + id_product
-    Respuesta = requests.get(url).json()
-    print("Búsqueda de producto")
-    print(json.dumps(Respuesta, indent=4, ensure_ascii=False))
+    url = 'https://fakestoreapi.com/products/' + id_product
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        Respuesta = response.json()
+        print("Búsqueda de producto")
+        print(json.dumps(Respuesta, indent=4, ensure_ascii=False))
+    except requests.exceptions.RequestException as e:
+        print("Error al buscar el producto:", e)
+        if response is not None:
+            print("Respuesta del servidor:", response.text)
 
-    
 def AddProduct():
     product_id = int(input("Ingrese el ID del producto: "))
     title = input("Ingrese el título del producto: ")
@@ -44,7 +56,7 @@ def AddProduct():
     
     try:
         response = requests.post(url, json=datos, headers={'Content-Type': 'application/json'})
-        response.raise_for_status() 
+        response.raise_for_status()
         added_product = response.json()
         print("Producto agregado exitosamente:", added_product)
     except requests.exceptions.RequestException as e:
@@ -94,7 +106,6 @@ def UpdateProduct():
         if response is not None:
             print("Respuesta del servidor:", response.text)
 
-
 def DeleteProduct():
     product_id = input("Ingrese el ID del producto a eliminar: ")
     url = 'https://fakestoreapi.com/products/' + product_id
@@ -108,7 +119,6 @@ def DeleteProduct():
         if response is not None:
             print("Respuesta del servidor:", response.text)
 
-
 def mostrar_menu():
     print("\nAdministración de Productos:")
     print("1. Consultar todos los productos")
@@ -118,10 +128,9 @@ def mostrar_menu():
     print("5. Eliminar un producto")
     print("6. Salir")
 
-
 while True:
     mostrar_menu()
-    opcion = input("Selecciona una opción (1-5): ")
+    opcion = input("Selecciona una opción (1-6): ")
     
     if opcion == '1':
         GetAllProducts()
