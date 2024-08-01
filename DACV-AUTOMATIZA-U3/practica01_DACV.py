@@ -44,7 +44,7 @@ def AddProduct():
     
     try:
         response = requests.post(url, json=datos, headers={'Content-Type': 'application/json'})
-        response.raise_for_status()  # Esto levantará una excepción si la petición fue fallida
+        response.raise_for_status() 
         added_product = response.json()
         print("Producto agregado exitosamente:", added_product)
     except requests.exceptions.RequestException as e:
