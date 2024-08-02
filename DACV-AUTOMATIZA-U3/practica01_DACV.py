@@ -26,7 +26,7 @@ def GetProduct():
                 print("---------------------")
                 print(json.dumps(producto, indent=4, ensure_ascii=False))
     except requests.exceptions.RequestException as e:
-        print("Error al buscar el producto:", e)
+        print("No se encontro el producto")
     except Exception as e:
         print("Ha ocurrido un error:", e)
 
@@ -85,10 +85,27 @@ def DeleteProduct():
     except Exception as e:
         print("Ha ocurrido un error:", e)
 
+import requests
+import json
+
+import requests
+import json
+
 def UpdateProduct():
     try:
         id = input("Ingresa el ID del producto a modificar: ")
         url = "https://fakestoreapi.com/products/" + id
+
+        response = requests.get(url)
+        if response.status_code == 404:
+            print("Producto no encontrado. Por favor, verifica el ID e intenta nuevamente.")
+            return  
+        elif response.status_code == 200:
+            product = response.json()
+            if not product:
+                print("Producto no encontrado. Por favor, verifica el ID e intenta nuevamente.")
+                return
+
         data = {
             "title": input("Nuevo título: "),
             "price": float(input("Nuevo precio: ")),
@@ -96,23 +113,18 @@ def UpdateProduct():
             "category": input("Nueva categoría: "),
             "image": "https://fakestoreapi.com/img/placeholder.jpg",
         }
-
         response = requests.put(url, json=data)
-        if response.status_code == 404:
-            print("El producto no existe. Por favor, verifica el ID e intenta nuevamente.")
-            return
         response.raise_for_status()  
-        updated_product = response.json()
-        print("---------------------")
-        print("Producto actualizado con éxito")
-        print(json.dumps(updated_product, indent=4, ensure_ascii=False))
+        respuesta_json = response.json()
+        if respuesta_json is None or "error" in respuesta_json or not respuesta_json:
+            print("El producto no existe o no se encontró.")
+        else:
+            print("Producto actualizado correctamente.")
+            print(json.dumps(respuesta_json, indent=4, ensure_ascii=False))
     except requests.exceptions.RequestException as e:
-        print("Error al realizar la solicitud:", e)
-    except ValueError:
-        print("Respuesta inválida. No se pudo parsear el JSON.")
+        print("no se pudo actualizar, no existe el producto")
     except Exception as e:
         print("Ha ocurrido un error:", e)
-
 def mostrar_menu():
     print("\nAdministración de Productos:")
     print("1. Consultar todos los productos")
